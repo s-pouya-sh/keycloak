@@ -1,0 +1,39 @@
+version: '3'
+networks:
+  keycloak-net:
+services:
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+      - 8443:8443
+    volumes:
+      - "/mnt/keycloak/tls/:/etc/x509/https"
+      - /mnt/keycloak/themes/login:/opt/jboss/keycloak/themes/blockchain/login
+    environment:
+      KEYCLOAK_HTTPS_PORT: 8443
+      KEYCLOAK_HOSTNAME: HOSTNAME
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: PASSWORD
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: PASSWORD
+    networks:
+    - keycloak-net
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: PASSWORD
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+    - keycloak-net
